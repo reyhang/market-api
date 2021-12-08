@@ -30,7 +30,7 @@ export class CartService {
     return this.cartRepository.insert({
       memberId: { id: data.memberId },
     });
-  }
+  } 
 
   async addCartItems(id: number, data: addCartItemDto) {
     const getProduct = await this.productsService.getProductByBarcode(
