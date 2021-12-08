@@ -15,7 +15,7 @@ export class ProductsService {
     async getAll(){
         
         const query = await this.productsRepository.find({
-            select:["title","price","barcode"]
+            select:["id","title","price","barcode"]
         })
         return query;
     }
@@ -25,6 +25,7 @@ export class ProductsService {
 
         const query = await this.productsRepository.findOne({
             select:[
+                "id",
                 "title",
                 "price",
                 "barcode"

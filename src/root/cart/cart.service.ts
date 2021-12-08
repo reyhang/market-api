@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductsService } from '../products/products.service';
 import { CartRepository } from './cart.repository';
@@ -22,7 +19,7 @@ export class CartService {
   async getCart(data: addCartDto) {
     return await this.cartRepository
       .createQueryBuilder('cart')
-      .select(['cart', 'member'])
+      .select(['cart.id'])
       .innerJoin('cart.memberId', 'member')
       .where('member.id = :id', { id: data.memberId })
       .andWhere('cart.status = 1')
@@ -58,6 +55,17 @@ export class CartService {
       });
     }
   }
+  async updateCartStatus(id:number) {
 
- 
-}
+    return await this.cartRepository.update({id},{status:0})
+
+  }
+
+  async deleteCartItems(id:number) {
+
+    return await this.cartItemsRepository.delete(id)
+
+  }
+
+
+  }

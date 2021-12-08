@@ -15,7 +15,7 @@ export class UsersService {
     async getAll(){
 
         const query = await this.userRepository.find({
-            select:["name","surname","age"]
+            select:["name","surname","mail","password","phone"]
         })
         return query;
 
@@ -24,33 +24,30 @@ export class UsersService {
     async getUser(filter:userFilterDto){
         
         const query =  await this.userRepository.createQueryBuilder('user')
-        .select(['user.name','user.surname','user.age'])
+        .select(['user.name','user.surname','user.mail'])
         .where('user.name like :search', {search: `%${filter.text}%`})
-        if(filter.age){
-            query.andWhere('user.age < :id',{id:filter.age})
+        if(filter.mail){
+            query.andWhere('user.age < :id',{id:filter.mail})
         }
         return query.getMany()
     }
 
     async addUser(data:addUserDto){
 
-        const addquery = new UsersEntity()
-        addquery.name = data.name;
-        addquery.surname=data.surname;
-        addquery.age=data.age;
-
         return this.userRepository.insert({
             name:data.name,
             surname:data.surname,
-            age:data.age
+            mail:data.mail,
+            password:data.password,
+            phone:data.phone        
         })
     }
+
     async updateUser(data:addUserDto,id:number){
-        const addquery = new UsersEntity()
-        addquery.name = data.name;
-        addquery.surname=data.surname;
-        addquery.age=data.age; 
-        return this.userRepository.update({id},addquery)
+        const query = new UsersEntity()
+        query.name = data.name;
+        query.surname=data.surname;
+        return this.userRepository.update({id},query)
     }
 
     async deleteUser(id:number){

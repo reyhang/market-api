@@ -4,18 +4,12 @@ import { IsNumber, IsString } from "class-validator";
 
 export class addUserDto{
 
-
     @IsString()
-    name:string;
-
-
-    @IsString()
-    surname:string;
-
-
-    @Type(()=>Number)
-    @IsNumber()
-    age:number;
+    name:string
+    surname:string
+    mail:string
+    password:string
+    phone:string 
 
 
 }

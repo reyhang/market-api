@@ -7,6 +7,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { addCartDto } from './dto/addCartDto.dto';
@@ -17,7 +19,9 @@ export class CartController {
   constructor(private CartService: CartService) {}
 
   @Get()
-  getCart(@Body() data: addCartDto) {
+  getCart(
+      @Query() data: addCartDto,
+    ){
     return this.CartService.getCart(data);
   }
 
@@ -38,12 +42,23 @@ export class CartController {
     }));
   }
 
-  @Delete('/:id')
-  deleteCart(@Param('id', ParseIntPipe) id: number) {
-    return this.CartService.deleteCart(id)
-      .then((res) => ({ message: 'Silme işlemi başarıyla tamamlandı.' }))
+  @Put('/:id')
+  updateCartStatus(@Param('id', ParseIntPipe) id: number) {
+    return this.CartService.updateCartStatus(id)
+      .then((res) => ({ message: 'Status güncellendi.' }))
       .catch((e) => {
         throw new InternalServerErrorException(e.message || e);
       });
   }
+
+  @Delete("items/:id")
+  deleteCartItems(
+    @Param("id",ParseIntPipe) id:number) {
+      return this.CartService.deleteCartItems(id)
+      .then((res) => ({message: "Silme işlemi başarıyla tamamlandı."}))
+      .catch((e) => {
+        throw new InternalServerErrorException(e.message || e)
+      })
+    } 
+
 }
