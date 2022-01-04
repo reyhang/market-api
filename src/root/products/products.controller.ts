@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   InternalServerErrorException,
   Param,
@@ -13,6 +14,7 @@ import {
 import { addProductDto } from './dto/addProductDto.dto';
 import { ProductsEntity } from './products.entity';
 import { ProductsService } from './products.service';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('products')
 export class ProductsController {
@@ -24,15 +26,36 @@ export class ProductsController {
   }
 
   @Get('/:id')
-  getProduct(@Param('id', ParseIntPipe) id: number) {
-    return this.productsService.getProduct(id);
+  getProductById(@Param('id', ParseIntPipe) id: number) {
+    return this.productsService.getProductById(id);
   }
 
+  @Get("/barcode/:id")
+  getProductByBarcode(
+    @Param("id") id:string) {
+    return this.productsService.getProductByBarcode(id)
+  }
+  
+
   @Post()
-  addProduct(@Body() data: addProductDto) {
-    const newData = data.toEntity();
-    return this.productsService.addProduct(newData).then((res) => ({
-      message: `${data}`,
+  addProduct(@Body() data: addProductDto) {;
+    const tokenOptions = {
+      secretKey: 'r22a01m28iG12yH23JsF9hS',
+    };
+    const verif = jwt.verify(
+      data.token,
+      tokenOptions.secretKey,
+      (err, user) => {
+        if (err) {
+          throw new ForbiddenException(err);
+        } else {
+          return user;
+        }
+      },
+    );
+    
+    return this.productsService.addProduct(data).then((res) => ({
+      message: `${data.title} ürünü eklenmiştir.`,
     }));
   }
 

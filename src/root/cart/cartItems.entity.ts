@@ -3,9 +3,6 @@ import { ProductsEntity } from "../products/products.entity";
 import { CartEntity } from "./cart.entity";
 
 
-
-
-
 @Entity("cart-items")
 export class CartItemsEntity extends BaseEntity{
    
@@ -26,7 +23,8 @@ export class CartItemsEntity extends BaseEntity{
 
     @Column({type:"integer",nullable:false})
     count:number
-    
+
+  
     
 
 }

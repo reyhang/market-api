@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity,PrimaryGeneratedColumn } from "typeorm";
 
 
 
@@ -13,9 +13,12 @@ export class ProductsEntity extends BaseEntity{
     title:string;
 
     @Column({type:"integer",nullable:false,comment:"Ürün Fiyatı"})
-    price:number;
+    price:string;
 
     @Column({type:"varchar",unique:true,nullable:false,comment:"Barkod Numarası"})
     barcode:string;
+
+    @Column({type:'varchar',nullable:true})
+    imageUrl:string;
 
 }

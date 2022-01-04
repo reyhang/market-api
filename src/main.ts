@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common'; // import built-in ValidationPi
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors()
   app.useGlobalPipes(
     new ValidationPipe({
         transform: true, // Veri tipi degisimi yapabilmemiz icin aktif edildi.

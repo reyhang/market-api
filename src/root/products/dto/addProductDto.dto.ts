@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { IsJWT, IsNumber, IsString } from "class-validator";
 import { ProductsEntity } from "../products.entity";
 
 
@@ -13,18 +13,26 @@ export class addProductDto{
 
     @Type(()=>Number)
     @IsNumber()
-    price:number;
+    price:string;
 
     @IsString()
     barcode:string
+
+    @IsString()
+    imageUrl:string 
+    
+    @IsJWT()
+    token:string
 
     toEntity(){
         const query = new ProductsEntity()
         query.barcode=this.barcode;
         query.price=this.price;
         query.title=this.title;
+        query.imageUrl=this.imageUrl;
         return query
     }
     
+  
 
 }

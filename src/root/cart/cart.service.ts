@@ -17,20 +17,32 @@ export class CartService {
   ) {}
 
   async getCart(data: addCartDto) {
-    return await this.cartRepository
-      .createQueryBuilder('cart')
-      .select(['cart.id'])
-      .innerJoin('cart.memberId', 'member')
-      .where('member.id = :id', { id: data.memberId })
-      .andWhere('cart.status = 1')
-      .getOne();
+    const cart = await this.cartRepository.findOne({
+      where: { memberId: data.memberId, status:1 },
+      select: ['id', 'status'],
+    });
+    if (!cart) {
+      return null;
+    }
+
+    const getItems = await this.cartItemsRepository.findAndCount({
+      where: { cartId: cart.id },
+      select: ['count', 'id'],
+      relations: ['productId'],
+    });
+
+    return {
+      ...cart,
+      items: getItems[0],
+      itemCount: getItems[1],
+    };
   }
 
   async addCart(data: addCartDto) {
     return this.cartRepository.insert({
       memberId: { id: data.memberId },
     });
-  } 
+  }
 
   async addCartItems(id: number, data: addCartItemDto) {
     const getProduct = await this.productsService.getProductByBarcode(
@@ -39,33 +51,61 @@ export class CartService {
     if (!getProduct)
       throw new InternalServerErrorException('Aradığınız ürün bulunamadı.');
     const checkCart = await this.cartItemsRepository.findOne({
-      where: { cartId: { id } },
+      where: { cartId: { id:id },productId:getProduct },
     });
     if (checkCart) {
       checkCart.count = checkCart.count + 1;
       return await this.cartItemsRepository.update(
-        { cartId: { id } },
+        { cartId: { id },productId:getProduct },
         checkCart,
       );
     } else {
       return await this.cartItemsRepository.insert({
         productId: getProduct,
-        cartId: { id },
+        cartId: { id:id },
         count: 1,
       });
     }
   }
-  async updateCartStatus(id:number) {
 
-    return await this.cartRepository.update({id},{status:0})
+  async incDecProduct(id: number, status: boolean) {
+    const getProduct = await this.cartItemsRepository.findOne(id);
 
+    if (!getProduct) {
+      throw new InternalServerErrorException('Ürün yok.');
+    }
+
+    if (status) {
+      if (getProduct) {
+        return await this.cartItemsRepository.update(
+          { id },
+
+          { count: getProduct.count + 1 },
+        );
+      }  
+
+    } else {
+      if (getProduct.count === 1) {
+        return await this.cartItemsRepository.delete({ id });
+      }
+
+      return await this.cartItemsRepository.update(
+        { id },
+
+        { count: getProduct.count - 1 },
+      );
+    }
   }
 
-  async deleteCartItems(id:number) {
-
-    return await this.cartItemsRepository.delete(id)
-
+  async addToCart(){
+    
   }
 
-
+  async updateCartStatus(id: number) {
+    return await this.cartRepository.update({ id }, { status: 0 });
   }
+
+  async deleteCartItems(id: number) {
+    return await this.cartItemsRepository.delete(id);
+  }
+}
