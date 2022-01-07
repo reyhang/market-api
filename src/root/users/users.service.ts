@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { addUserDto } from './dto/adduserDto.dto';
 import { userFilterDto } from './dto/filterDto.dto';
+import { loginDto } from './dto/loginDto.dto';
 import { UsersEntity } from './users.entity';
 import { UsersRepository } from './users.repository';
+import * as jwt from 'jsonwebtoken';
+import { tokenControlDto } from './dto/tokenControlDto.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +14,52 @@ export class UsersService {
         @InjectRepository(UsersRepository,'market')
         private userRepository:UsersRepository
     ){}
+
+    async login(data:loginDto){
+        const query = await this.userRepository.findOne({
+            select:["id","mail","name","surname"],
+            where:{
+                mail:data.mail,
+                password:data.password,
+
+            }
+        })
+        if(!query){
+            throw new InternalServerErrorException("Böyle bir kullanıcı bulunamadı.")
+        }
+        const tokenOptions = {
+            secretKey: 'r22a01m28iuS3rG12yH23JsF9hS',
+          };
+
+          const token = jwt.sign(
+            { id: query.id,mail: query.mail },
+            tokenOptions.secretKey,
+            { expiresIn: '10m' },
+          );
+          return {
+            token,
+          };  
+    }
+
+    async tokenControl(data: tokenControlDto) {
+        const tokenOptions = {
+          secretKey: 'r22a01m2uS3r8iG12yH23JsF9hS',
+        };
+    
+        const verif = jwt.verify(
+          data.token,
+          tokenOptions.secretKey,
+          (err, user) => {
+            if (err) {
+              throw new ForbiddenException(err);
+            } else {
+              return user;
+            }
+          },
+        );
+    
+        return verif;
+      }
 
     async getAll(){
 

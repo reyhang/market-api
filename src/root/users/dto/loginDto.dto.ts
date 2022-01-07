@@ -1,9 +1,11 @@
 import { IsString } from "class-validator";
 
+
+
 export class loginDto {
 
     @IsString()
-    email:string;
+    mail:string;
 
     @IsString()
     password:string;

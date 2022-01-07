@@ -21,8 +21,6 @@ export class addProductDto{
     @IsString()
     imageUrl:string 
     
-    @IsJWT()
-    token:string
 
     toEntity(){
         const query = new ProductsEntity()

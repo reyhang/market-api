@@ -39,8 +39,9 @@ export class ProductsController {
 
   @Post()
   addProduct(@Body() data: addProductDto) {;
-    const tokenOptions = {
+    /* const tokenOptions = {
       secretKey: 'r22a01m28iG12yH23JsF9hS',
+      
     };
     const verif = jwt.verify(
       data.token,
@@ -52,7 +53,7 @@ export class ProductsController {
           return user;
         }
       },
-    );
+    ); */
     
     return this.productsService.addProduct(data).then((res) => ({
       message: `${data.title} ürünü eklenmiştir.`,
@@ -60,10 +61,11 @@ export class ProductsController {
   }
 
   @Put('/:id')
-  updateProduct(
+   updateProduct(
     @Body() data: addProductDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
+
     return this.productsService.updateProduct(data, id);
   }
 

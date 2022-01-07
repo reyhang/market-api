@@ -10,7 +10,7 @@ const tokenOptions = {
     secretKey:"r22a01m28iG12yH23JsF9hS",
 }
 
-const token = jwt.sign({id:"id"},tokenOptions.secretKey,{expiresIn:"10m"})
+const token = jwt.sign( {id:"id"},tokenOptions.secretKey,{expiresIn:"10m"})
 
 const verif =  jwt.verify(token,tokenOptions.secretKey) 
 
@@ -33,7 +33,7 @@ if(!verif) {
 
       }
 
-      @Post("/token-control")
+      @Get("/token-control")
         tokenControl(
             @Body() data:tokenControlDto ){
                 return this.adminService.tokenControl(data)}

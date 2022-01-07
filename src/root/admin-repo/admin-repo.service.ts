@@ -32,7 +32,7 @@ export class AdminRepoService {
       },
     });
     if (!query) {
-      throw new InternalServerErrorException('Böyle bir kullanıcı bulunamadı');
+      throw new InternalServerErrorException('Böyle bir kullanıcı bulunamadı.');
     }
     const tokenOptions = {
       secretKey: 'r22a01m28iG12yH23JsF9hS',
