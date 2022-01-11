@@ -18,7 +18,7 @@ export class CartService {
 
   async getCart(data: addCartDto) {
     const cart = await this.cartRepository.findOne({
-      where: { memberId: data.memberId, status:1 },
+      where: { memberId: data.memberId, status: 1 },
       select: ['id', 'status'],
     });
     if (!cart) {
@@ -30,18 +30,31 @@ export class CartService {
       select: ['count', 'id'],
       relations: ['productId'],
     });
+    console.log(getItems[0][0].productId.price);
 
+    let priceArr = getItems[0].map((res) => res.productId.price);
+    const price = priceArr.reduce((a, b) => a + b, 0);
     return {
       ...cart,
       items: getItems[0],
       itemCount: getItems[1],
+      itemPrice: price,
     };
   }
 
   async addCart(data: addCartDto) {
-    return this.cartRepository.insert({
-      memberId: { id: data.memberId },
+    const cart = await this.cartRepository.findOne({
+      where: { memberId: data.memberId, status: 1 },
+      select: ['id', 'status'],
     });
+    if (!cart) {
+      await this.cartRepository.insert({
+        memberId: { id: data.memberId },
+      });
+      return { message: 'Sepetiniz Oluşturuldu.' };
+    } else {
+      return { message: 'Sepetiniz daha önceden oluşturulmuş.' };
+    }
   }
 
   async addCartItems(id: number, data: addCartItemDto) {
@@ -51,18 +64,18 @@ export class CartService {
     if (!getProduct)
       throw new InternalServerErrorException('Aradığınız ürün bulunamadı.');
     const checkCart = await this.cartItemsRepository.findOne({
-      where: { cartId: { id:id },productId:getProduct },
+      where: { cartId: { id: id }, productId: getProduct },
     });
     if (checkCart) {
       checkCart.count = checkCart.count + 1;
       return await this.cartItemsRepository.update(
-        { cartId: { id },productId:getProduct },
+        { cartId: { id }, productId: getProduct },
         checkCart,
       );
     } else {
       return await this.cartItemsRepository.insert({
         productId: getProduct,
-        cartId: { id:id },
+        cartId: { id: id },
         count: 1,
       });
     }
@@ -82,8 +95,7 @@ export class CartService {
 
           { count: getProduct.count + 1 },
         );
-      }  
-
+      }
     } else {
       if (getProduct.count === 1) {
         return await this.cartItemsRepository.delete({ id });
@@ -97,9 +109,7 @@ export class CartService {
     }
   }
 
-  async addToCart(){
-    
-  }
+  async addToCart() {}
 
   async updateCartStatus(id: number) {
     return await this.cartRepository.update({ id }, { status: 0 });

@@ -13,7 +13,7 @@ export class ProductsEntity extends BaseEntity{
     title:string;
 
     @Column({type:"integer",nullable:false,comment:"Ürün Fiyatı"})
-    price:string;
+    price:number;
 
     @Column({type:"varchar",unique:true,nullable:false,comment:"Barkod Numarası"})
     barcode:string;

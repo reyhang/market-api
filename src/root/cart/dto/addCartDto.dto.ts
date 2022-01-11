@@ -9,4 +9,6 @@ export class addCartDto{
     @IsNumber()
     memberId:number
 
+
+
 }

@@ -28,9 +28,7 @@ export class CartController {
   @Post()
   addCart(
     @Query() data:addCartDto) {
-    return this.CartService.addCart(data).then((res) => ({
-      message: `${data.memberId}nin sepeti oluşturuldu. `,
-    }));
+    return this.CartService.addCart(data)
   }
 
   @Post('/items/:id')

@@ -13,7 +13,7 @@ export class addProductDto{
 
     @Type(()=>Number)
     @IsNumber()
-    price:string;
+    price:number;
 
     @IsString()
     barcode:string
